@@ -1,18 +1,20 @@
 import time
 import socket
-from dbot import send_message, Authority, request_listen
+from dzmicro import send_message, request_listen
 
 def help(task):
+    from dzmicro import Authority
+    authority = Authority()
     source_id = task.get('source_id', None)
     platform = task.get('platform', None)
     gid, qid = source_id
-    permission_level = Authority.get_permission_level(source_id)
-    permission = Authority.get_permission_by_level(permission_level)
+    permission_level = authority.get_permission_level(source_id)
+    permission = authority.get_permission_by_level(permission_level)
     if gid:
         message = f'[CQ:at,qq={qid}]\n'
     message = f'关键词 {KEYWORD}\n当前权限 {permission}\n可调用指令如下\n'
     for command in list(func_dict.keys()):
-        if Authority.check_command_permission(command, source_id):
+        if authority.check_command_permission(command, source_id):
             message += f'  - {command}\n'
     send_message(message.strip(), source_id, platform)
 
