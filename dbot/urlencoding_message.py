@@ -3,6 +3,7 @@ import re
 import urllib
 
 def urlencoding_message(message):
+    #TODO CQ码连续时会出现问题
     # split the string using the pattern
     cqcode_first = message.startswith("[CQ:")
     cqcodes = re.findall(r"\[CQ:[^\]]*\]", message)
