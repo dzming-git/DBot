@@ -13,9 +13,9 @@ class DBot(DzMicro):
         self.message_handler: Callable[[str, List], None] = message_handler_thread.message_handler
         self.set_send_message_to_source(send_message_to_cqhttp)
     
-    def start(self):
+    def start_bot(self):
         server_crator = ServerCreator()
-        if self.start_server():
+        if self.start():
             if self.is_platform():
                 server_crator.set_message_handler(self.message_handler)
                 self._dbot_server = server_crator.creat_server()
