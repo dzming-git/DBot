@@ -1,12 +1,11 @@
 import time
 import socket
-from dzmicro import send_message, request_listen
+from dzmicro import singleton_server_manager, request_listen, send_message
 
-def help(task):
-    from dzmicro import Authority
-    authority = Authority()
+def help(uuid: str, task):
+    server_unique_info = singleton_server_manager.get_server_unique_info(uuid)
+    authority = server_unique_info.authority
     source_id = task.get('source_id', None)
-    platform = task.get('platform', None)
     gid, qid = source_id
     permission_level = authority.get_permission_level(source_id)
     permission = authority.get_permission_by_level(permission_level)
@@ -16,48 +15,44 @@ def help(task):
     for command in list(func_dict.keys()):
         if authority.check_command_permission(command, source_id):
             message += f'  - {command}\n'
-    send_message(message.strip(), source_id, platform)
+    send_message(uuid, message.strip(), source_id)
 
-def countdown(task):
+def countdown(uuid: str, task):
     source_id = task.get('source_id', None)
     args = task.get('args', [])
-    platform = task.get('platform', None)
     if not args:
-        send_message('缺少参数', source_id, platform)
+        send_message(uuid, '缺少参数', source_id)
     else:
         time_countdown = int(args[0])
         while time_countdown > 0:
-            send_message(f'倒计时 {time_countdown}', source_id, platform)
+            send_message(uuid, f'倒计时 {time_countdown}', source_id)
             time_countdown -= 1
             time.sleep(1)
-        send_message('倒计时 结束', source_id, platform)
+        send_message(uuid, '倒计时 结束', source_id)
 
-def get_ip(task):
+def get_ip(uuid: str, task):
     source_id = task.get('source_id', None)
-    platform = task.get('platform', None)
     hostname = socket.gethostname()
     ip_address = socket.gethostbyname(hostname)
-    send_message(ip_address, source_id, platform)
+    send_message(uuid, ip_address, source_id)
 
-def auto_echo(task):
+def auto_echo(uuid: str, task):
     source_id = task.get('source_id', None)
     args = task.get('args', [])
-    platform = task.get('platform', None)
     request_command = '自动复读'
     command = '复读'
     if not args or args[0] == '开始':        
-        request_listen(request_command, command, source_id, True)
-        send_message('自动复读开始', source_id, platform)
+        request_listen(uuid, request_command, command, source_id, True)
+        send_message(uuid, '自动复读开始', source_id)
     elif args[0] == '停止':
-        request_listen(request_command, command, source_id, False)
-        send_message('自动复读停止', source_id, platform)
+        request_listen(uuid, request_command, command, source_id, False)
+        send_message(uuid, '自动复读停止', source_id)
 
-def echo(task):
+def echo(uuid: str, task):
     source_id = task.get('source_id', None)
     args = task.get('args', [])
-    platform = task.get('platform', None)
     if args:
-        send_message(args[0], source_id, platform)
+        send_message(uuid, args[0], source_id)
 
 KEYWORD = '#测试'
 func_dict = {

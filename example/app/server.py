@@ -1,5 +1,5 @@
 # service.py
-from example.app import func_dict, KEYWORD
+from app import func_dict, KEYWORD
 from dbot import DBot
 
 if __name__ == '__main__': 
